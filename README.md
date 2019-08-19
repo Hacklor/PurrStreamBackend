@@ -24,3 +24,9 @@ pipenv shell
 python manage.py migrate
 python manage.py runserver
 ```
+
+## Create Admin user
+
+```bash
+python manage.py createsuperuser
+```
