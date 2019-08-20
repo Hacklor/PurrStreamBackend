@@ -25,6 +25,12 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+To access the server in the CodeAnywhere container with the preview link, it needs to run at `0.0.0.0:3000`
+
+```bash
+python manage.py runserver 0.0.0.0:3000
+```
+
 ## Create Admin user
 
 ```bash
