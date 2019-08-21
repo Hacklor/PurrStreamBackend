@@ -1,40 +1,63 @@
 from django.test import TestCase
-from django.db.utils import IntegrityError
+from django.core.exceptions import ValidationError
 
 from stream.models import Purr
 
 class ModelTests(TestCase):
 
     def test_contains_author_and_content(self):
-        Purr.objects.create(
-            author='Author of the purr',
+        purr = Purr(
+            author='Author',
             content='Content of a purr'
         )
+        purr.full_clean()
+        purr.save()
 
-        purr = Purr.objects.first()
-        self.assertEquals(purr.content, 'Content of a purr')
-        self.assertEquals(purr.author, 'Author of the purr')
+        actual = Purr.objects.first()
+        self.assertEquals(actual.content, 'Content of a purr')
+        self.assertEquals(actual.author, 'Author')
 
     def test_content_cannot_be_null(self):
-        # I would like to test the message as well
-        # so that I know it fails for the correct reason
-        # How?
-        with self.assertRaises(IntegrityError):
-            Purr.objects.create(author='Author of the purr')
+        with self.assertRaises(ValidationError) as cm:
+            Purr(author='Author').full_clean()
 
+        # Still looking for a cleaner, less brittle way to test this
+        self.assertEqual(cm.exception.message_dict, {'content': ['This field cannot be null.']})
 
     def test_content_cannot_be_blank(self):
-        with self.assertRaises(IntegrityError):
-            Purr.objects.create(
-                author='Author of the purr',
-                content='',
-            )
+        with self.assertRaises(ValidationError) as cm:
+            Purr(author='Author', content='').full_clean()
 
-    # content cannot be blank
-    # content is allowed to be 141 characters
-    # content is not allowed to be 142 characters
+        # Still looking for a cleaner, less brittle way to test this
+        self.assertEqual(cm.exception.message_dict, {'content': ['This field cannot be blank.']})
+
+    def test_content_allowed_141_chars(self):
+        content = 141 * 'a'
+
+        purr = Purr(
+            author='Author',
+            content=content,
+        )
+        purr.full_clean()
+        purr.save()
+
+        actual = Purr.objects.first()
+        self.assertEquals(actual.content, content)
+
+    def test_content_not_allowed_142_chars(self):
+        with self.assertRaises(ValidationError) as cm:
+            content = 142 * 'b'
+            Purr(
+                author='Author',
+                content=content
+            ).full_clean()
+
+        # Still looking for a cleaner, less brittle way to test this
+        self.assertEqual(cm.exception.message_dict, {'content': ['Ensure this value has at most 141 characters (it has 142).']})
+
+
     # content is allowed special characters
     # author cannot be null
     # author cannot be blank
-    # author may contain alphanumeric characters
+    # author may only contain alphanumeric characters
     # author may not contain non alphanumeric characters
