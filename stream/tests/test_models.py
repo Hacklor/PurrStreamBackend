@@ -44,6 +44,17 @@ class ModelTests(TestCase):
         actual = Purr.objects.first()
         self.assertEquals(actual.content, content)
 
+    def test_content_allowed_special_characters(self):
+        purr = Purr(
+            author='Author',
+            content='Content !@#$%,".',
+        )
+        purr.full_clean()
+        purr.save()
+
+        actual = Purr.objects.first()
+        self.assertEquals(actual.content, 'Content !@#$%,".')
+
     def test_content_not_allowed_142_chars(self):
         with self.assertRaises(ValidationError) as cm:
             content = 142 * 'b'
@@ -82,5 +93,3 @@ class ModelTests(TestCase):
             Purr(author='author!', content='Content').full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'author': ['Only alphanumeric characters are allowed.']})
-
-    # content is allowed special characters
