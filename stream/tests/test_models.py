@@ -60,12 +60,27 @@ class ModelTests(TestCase):
 
         self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be null.']})
 
-    def test_authro_cannot_be_blank(self):
+    def test_author_cannot_be_blank(self):
         with self.assertRaises(ValidationError) as cm:
             Purr(author='', content='Content').full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be blank.']})
 
+    def test_author_can_contain_alphanumeric(self):
+        purr = Purr(
+            author='123abcxyzABCXYZ',
+            content='Content of a purr'
+        )
+        purr.full_clean()
+        purr.save()
+
+        actual = Purr.objects.first()
+        self.assertEquals(actual.author, '123abcxyzABCXYZ')
+
+    def test_author_cannot_contain_non_alphanumeric(self):
+        with self.assertRaises(ValidationError) as cm:
+            Purr(author='author!', content='Content').full_clean()
+
+        self.assertEqual(cm.exception.message_dict, {'author': ['Only alphanumeric characters are allowed.']})
+
     # content is allowed special characters
-    # author may only contain alphanumeric characters
-    # author may not contain non alphanumeric characters
