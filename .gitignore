@@ -169,3 +169,6 @@ local_settings.py
 
 .env
 db.sqlite3
+
+### Vagrant ###
+.vagrant
