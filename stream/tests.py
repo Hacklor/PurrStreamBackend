@@ -1,3 +1,8 @@
 from django.test import TestCase
 
-# Create your tests here.
+from stream.models import Purr
+
+class ModelTests(TestCase):
+
+    def create_instance(self):
+        Purr()
