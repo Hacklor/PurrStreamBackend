@@ -43,5 +43,13 @@ class ModelTests(TestCase):
         with self.assertRaises(ValidationError) as cm:
             Purr(author=invalid_author).full_clean()
 
-        self.assertEqual(cm.exception.message_dict, {'author': ['Ensure this value has at most 25 characters (it has 33).']})
+        self.assertEqual(cm.exception.message_dict, {'author': ['Ensure this value has at most 32 characters (it has 33).']})
 
+    def test_author_is_allowed_to_be_32_chars(self):
+        valid_author = 32 * 'a'
+        purr = Purr(author=valid_author)
+        purr.full_clean()
+        purr.save()
+
+        actual = Purr.objects.first()
+        self.assertEquals(actual.author, valid_author)
