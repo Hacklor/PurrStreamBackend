@@ -60,3 +60,7 @@ class ModelTests(TestCase):
 
         actual = Purr.objects.first()
         self.assertEquals(actual.author, valid_author)
+
+    def test_content_cannot_save_null(self):
+        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: stream_purr.content'):
+            Purr(author='Author').save()
