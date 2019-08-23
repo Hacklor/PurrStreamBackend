@@ -64,3 +64,11 @@ class ModelTests(TestCase):
     def test_content_cannot_save_null(self):
         with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: stream_purr.content'):
             Purr(author='Author').save()
+
+    def test_content_null_is_invalid(self):
+        with self.assertRaises(ValidationError) as cm:
+            Purr(
+                author='Author',
+            ).full_clean()
+
+        self.assertEqual(cm.exception.message_dict, {'content': ['This field cannot be null.']})
