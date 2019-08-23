@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 
+from django.utils import timezone
 from datetime import datetime
 from unittest.mock import Mock
 
@@ -10,16 +11,15 @@ from stream.models import Purr
 class ModelTests(TestCase):
 
     def setUp(self):
+        self.mocked_now = datetime(2019, 1, 2)
+        timezone.now = Mock(return_value=self.mocked_now)
         self.purr = Purr(
             author='Author',
             content='Content',
         )
 
     def test_mock_datetime_now(self):
-        mocked_now = datetime(2019, 1, 2)
-        Purr.datetime_now = Mock(return_value=mocked_now)
-
-        self.assertEquals(Purr.datetime_now(), mocked_now)
+        self.assertEquals(timezone.now(), self.mocked_now)
 
     def test_purr_contains_all_attributes(self):
         self.purr.clean()
