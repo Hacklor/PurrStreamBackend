@@ -81,3 +81,13 @@ class ModelTests(TestCase):
             ).full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'content': ['This field cannot be blank.']})
+
+    def test_content_cannot_be_longer_than_141_chars(self):
+        invalid_content = 142 * 'b'
+        with self.assertRaises(ValidationError) as cm:
+            Purr(
+                author='Author',
+                content=invalid_content,
+            ).full_clean()
+
+        self.assertEqual(cm.exception.message_dict, {'content': ['Ensure this value has at most 120 characters (it has 142).']})
