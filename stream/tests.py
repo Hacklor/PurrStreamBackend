@@ -90,4 +90,16 @@ class ModelTests(TestCase):
                 content=invalid_content,
             ).full_clean()
 
-        self.assertEqual(cm.exception.message_dict, {'content': ['Ensure this value has at most 120 characters (it has 142).']})
+        self.assertEqual(cm.exception.message_dict, {'content': ['Ensure this value has at most 141 characters (it has 142).']})
+
+    def test_content_is_allowed_to_be_141_chars(self):
+        valid_content = 141 * 'a'
+        purr = Purr(
+            author='Author',
+            content=valid_content,
+        )
+        purr.full_clean()
+        purr.save()
+
+        actual = Purr.objects.first()
+        self.assertEquals(actual.content, valid_content)
