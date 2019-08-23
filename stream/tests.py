@@ -6,13 +6,15 @@ from stream.models import Purr
 
 class ModelTests(TestCase):
 
-    def test_purr_contains_author_and_content(self):
-        purr = Purr(
+    def setUp(self):
+        self.purr = Purr(
             author='Author',
-            content='Content',
+            content='Content'
         )
-        purr.clean()
-        purr.save()
+
+    def test_purr_contains_author_and_content(self):
+        self.purr.clean()
+        self.purr.save()
 
         actual = Purr.objects.first()
         self.assertEquals(actual.author, 'Author')
@@ -20,86 +22,74 @@ class ModelTests(TestCase):
 
     def test_author_cannot_save_null(self):
         with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: stream_purr.author'):
-            Purr().save()
+            self.purr.author = None
+            self.purr.save()
 
     def test_author_null_is_invalid(self):
         with self.assertRaises(ValidationError) as cm:
-            Purr(
-                content='Content',
-            ).full_clean()
+            self.purr.author = None
+            self.purr.full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be null.']})
 
     def test_author_blank_is_invalid(self):
         with self.assertRaises(ValidationError) as cm:
-            Purr(
-                author='',
-                content='Content',
-            ).full_clean()
+            self.purr.author = ''
+            self.purr.full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be blank.']})
 
     def test_author_cannot_be_longer_than_32_chars(self):
         invalid_author = 33 * 'a'
+
         with self.assertRaises(ValidationError) as cm:
-            Purr(
-                author=invalid_author,
-                content='Content',
-            ).full_clean()
+            self.purr.author = invalid_author
+            self.purr.full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'author': ['Ensure this value has at most 32 characters (it has 33).']})
 
     def test_author_is_allowed_to_be_32_chars(self):
         valid_author = 32 * 'a'
-        purr = Purr(
-            author=valid_author,
-            content='Content',
-        )
-        purr.full_clean()
-        purr.save()
+        self.purr.author=valid_author
+        self.purr.full_clean()
+        self.purr.save()
 
         actual = Purr.objects.first()
         self.assertEquals(actual.author, valid_author)
 
     def test_content_cannot_save_null(self):
         with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: stream_purr.content'):
-            Purr(author='Author').save()
+            self.purr.content = None
+            self.purr.save()
 
     def test_content_null_is_invalid(self):
         with self.assertRaises(ValidationError) as cm:
-            Purr(
-                author='Author',
-            ).full_clean()
+            self.purr.content = None
+            self.purr.full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'content': ['This field cannot be null.']})
 
     def test_content_blank_is_invalid(self):
         with self.assertRaises(ValidationError) as cm:
-            Purr(
-                author='Author',
-                content='',
-            ).full_clean()
+            self.purr.content = ''
+            self.purr.full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'content': ['This field cannot be blank.']})
 
     def test_content_cannot_be_longer_than_141_chars(self):
         invalid_content = 142 * 'b'
+
         with self.assertRaises(ValidationError) as cm:
-            Purr(
-                author='Author',
-                content=invalid_content,
-            ).full_clean()
+            self.purr.content = invalid_content
+            self.purr.full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'content': ['Ensure this value has at most 141 characters (it has 142).']})
 
     def test_content_is_allowed_to_be_141_chars(self):
         valid_content = 141 * 'a'
-        purr = Purr(
-            author='Author',
-            content=valid_content,
-        )
-        purr.full_clean()
-        purr.save()
+        self.purr.content = valid_content
+        self.purr.full_clean()
+        self.purr.save()
 
         actual = Purr.objects.first()
         self.assertEquals(actual.content, valid_content)
