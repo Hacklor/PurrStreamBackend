@@ -26,8 +26,22 @@ class ModelTests(TestCase):
 
         self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be null.']})
 
+    def test_author_null_is_invalid(self):
+        with self.assertRaises(ValidationError) as cm:
+            Purr().full_clean()
+
+        self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be null.']})
+
     def test_author_blank_is_invalid(self):
         with self.assertRaises(ValidationError) as cm:
             Purr(author='').full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be blank.']})
+
+    def test_author_cannot_be_longer_than_32_chars(self):
+        invalid_author = 33 * 'a'
+        with self.assertRaises(ValidationError) as cm:
+            Purr(author=invalid_author).full_clean()
+
+        self.assertEqual(cm.exception.message_dict, {'author': ['Ensure this value has at most 25 characters (it has 33).']})
+
