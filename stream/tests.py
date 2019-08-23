@@ -25,3 +25,9 @@ class ModelTests(TestCase):
             Purr().full_clean()
 
         self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be null.']})
+
+    def test_author_blank_is_invalid(self):
+        with self.assertRaises(ValidationError) as cm:
+            Purr(author='').full_clean()
+
+        self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be blank.']})
