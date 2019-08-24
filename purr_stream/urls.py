@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from stream import api
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('purrs/', api.purr_list),
 ]
