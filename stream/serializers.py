@@ -1,5 +1,6 @@
+from rest_framework import serializers
 
-class PurrSerializer:
+class PurrSerializer(serializers.ModelSerializer):
 
     def init(self):
         print("wut?")
