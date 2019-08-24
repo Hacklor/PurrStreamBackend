@@ -8,7 +8,7 @@ from unittest.mock import Mock
 
 from stream.models import Purr
 
-class ModelTests(TestCase):
+class PurrModelTests(TestCase):
 
     def setUp(self):
         self.mocked_now = datetime(2019, 1, 2)
