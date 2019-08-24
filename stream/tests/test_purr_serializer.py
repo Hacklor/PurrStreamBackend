@@ -6,31 +6,32 @@ from stream.models import Purr
 
 class PurrSerializerTests(TestCase):
 
-    def test_creates_valid_purr_instance(self):
-        purr_attributes = {
+    def setUp(self):
+        self.purr_attributes = {
             'author': 'Author',
             'content': 'Content of a purr',
         }
-        serializer = PurrSerializer(data=purr_attributes)
+        self.purr = Purr(
+            author='Author',
+            content='Content of a purr',
+        )
+
+    def test_creates_valid_purr_instance(self):
+        serializer = PurrSerializer(data=self.purr_attributes)
         self.assertTrue(serializer.is_valid())
         actual = serializer.save()
 
         self.assertIsInstance(actual, Purr)
         self.assertEquals(actual.id, 1)
-        self.assertEquals(actual.author, 'Author')
-        self.assertEquals(actual.content, 'Content of a purr')
+        self.assertEquals(actual.author, self.purr_attributes['author'])
+        self.assertEquals(actual.content, self.purr_attributes['content'])
 
     def test_retrieves_valid_purr_instance(self):
-        purr = Purr(
-            author='Author',
-            content='Content',
-        )
-        purr.save()
+        self.purr.save()
 
-        purr_attributes = {
-            'id': 1,
-            'author': 'Author',
-            'content': 'Content',
-        }
-        serializer = PurrSerializer(instance=purr)
-        self.assertEquals(serializer.data, purr_attributes)
+        serializer = PurrSerializer(instance=self.purr)
+
+        self.purr_attributes['id'] = 1
+        self.assertEquals(serializer.data['id'], self.purr_attributes['id'])
+        self.assertEquals(serializer.data['author'], self.purr_attributes['author'])
+        self.assertEquals(serializer.data['content'], self.purr_attributes['content'])
