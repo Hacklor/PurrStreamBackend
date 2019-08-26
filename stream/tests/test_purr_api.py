@@ -56,3 +56,9 @@ class CreatePurrApiTests(APITestCase):
         ]
         self.assertEquals(expected, response.data)
 
+    def test_returns_bad_request_invalid_purr(self):
+        purr = {'author': '', 'content': 'Content1'}
+        response = self.client.post('/purrs/', purr)
+
+        self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
+        self.assertEquals('blank', response.data['author'][0].code)
