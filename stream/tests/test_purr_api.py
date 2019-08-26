@@ -45,3 +45,14 @@ class CreatePurrApiTests(APITestCase):
         response = self.client.post('/purrs/', purr)
 
         self.assertEquals(status.HTTP_201_CREATED, response.status_code)
+
+    def test_can_list_created_purr(self):
+        purr = {'author': 'Author1', 'content': 'Content1'}
+        response = self.client.post('/purrs/', purr)
+
+        response = self.client.get('/purrs/')
+        expected = [
+            {'id': 1, 'author': 'Author1', 'content': 'Content1'},
+        ]
+        self.assertEquals(expected, response.data)
+
