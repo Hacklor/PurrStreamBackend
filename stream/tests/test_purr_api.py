@@ -16,10 +16,16 @@ class PurrApiTests(APITestCase):
 
         self.assertEquals([], response.data)
 
-    def test_returns_purr_when_present(self):
-        Purr.objects.create(author='Author', content='Content')
+    def test_returns_list_of_multiple_purrs(self):
+        Purr.objects.create(author='Author1', content='Content1')
+        Purr.objects.create(author='Author2', content='Content2')
+        Purr.objects.create(author='Author3', content='Content3')
 
         response = self.client.get('/purrs/')
 
-        expected = [ {'id': 1, 'author': 'Author', 'content': 'Content'} ]
+        expected = [
+            {'id': 1, 'author': 'Author1', 'content': 'Content1'},
+            {'id': 2, 'author': 'Author2', 'content': 'Content2'},
+            {'id': 3, 'author': 'Author3', 'content': 'Content3'},
+        ]
         self.assertEquals(expected, response.data)
