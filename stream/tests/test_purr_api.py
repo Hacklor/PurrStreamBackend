@@ -3,7 +3,7 @@ from rest_framework import status
 
 from stream.models import Purr
 
-class PurrApiTests(APITestCase):
+class ListPurrsApiTests(APITestCase):
 
     def test_returns_success(self):
         response = self.client.get('/purrs/')
@@ -37,3 +37,11 @@ class PurrApiTests(APITestCase):
             {'id': 3, 'author': 'Author3', 'content': 'Content3'},
         ]
         self.assertEquals(expected, response.data)
+
+class CreatePurrApiTests(APITestCase):
+
+    def test_returns_status_created(self):
+        purr = {'author': 'Author1', 'content': 'Content1'}
+        response = self.client.post('/purrs/', purr)
+
+        self.assertEquals(status.HTTP_201_CREATED, response.status_code)
