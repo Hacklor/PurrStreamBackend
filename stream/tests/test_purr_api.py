@@ -11,6 +11,14 @@ class PurrApiTests(APITestCase):
         self.assertEquals(status.HTTP_200_OK, response.status_code)
         self.assertEquals('application/json', response['Content-Type'])
 
+    def test_returns_purr_as_json(self):
+        Purr.objects.create(author='Author', content='Content')
+
+        response = self.client.get('/purrs/')
+
+        expected = b'[{"id":1,"author":"Author","content":"Content"}]'
+        self.assertEquals(expected, response.content)
+
     def test_returns_empty_list_of_purrs(self):
         response = self.client.get('/purrs/')
 
