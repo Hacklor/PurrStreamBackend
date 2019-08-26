@@ -66,8 +66,18 @@ class CreatePurrApiTests(APITestCase):
 class DestroyPurrApiTests(APITestCase):
 
     def test_destroy_existing_purr(self):
-        purr = {'author': 'Author1', 'content': 'Content1'}
-        self.client.post('/purrs/', purr)
+        self.client.post('/purrs/', {'author': 'Author1', 'content': 'Content1'})
 
         response = self.client.delete('/purrs/1/')
         self.assertEquals(status.HTTP_204_NO_CONTENT, response.status_code)
+
+        self.assertEquals([], self.client.get('/purrs/').data)
+
+    # I do not agree with this behavior
+    # You got what you wished for, mission accomplished
+    # Returning a 204 is fine! On the outside it doesn't matter
+    # But leaving it for now, maybe I'll override later
+    def test_destroy_non_existing_purr(self):
+        response = self.client.delete('/purrs/1/')
+        self.assertEquals(status.HTTP_404_NOT_FOUND, response.status_code)
+
