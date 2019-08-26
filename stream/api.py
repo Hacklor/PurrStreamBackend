@@ -3,4 +3,4 @@ from rest_framework.response import Response
 
 @api_view(['GET'])
 def purr_list(request):
-    return(Response('test response'))
+    return(Response([]))
