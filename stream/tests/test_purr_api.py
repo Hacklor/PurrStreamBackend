@@ -62,3 +62,12 @@ class CreatePurrApiTests(APITestCase):
 
         self.assertEquals(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertEquals('blank', response.data['author'][0].code)
+
+class DestroyPurrApiTests(APITestCase):
+
+    def test_destroy_existing_purr(self):
+        purr = {'author': 'Author1', 'content': 'Content1'}
+        self.client.post('/purrs/', purr)
+
+        response = self.client.delete('/purrs/1/')
+        self.assertEquals(status.HTTP_204_NO_CONTENT, response.status_code)

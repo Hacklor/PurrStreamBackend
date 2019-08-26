@@ -7,6 +7,7 @@ from stream.serializers import PurrSerializer
 
 class PurrViewSet(mixins.ListModelMixin,
                     mixins.CreateModelMixin,
+                    mixins.DestroyModelMixin,
                     viewsets.GenericViewSet):
 
     queryset = Purr.objects.all()
