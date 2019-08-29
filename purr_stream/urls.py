@@ -15,7 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from stream import api
+
+from stream.api import PurrViewSet
+from rest_framework.routers import DefaultRouter
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+router = DefaultRouter()
+router.register(r'purrs', PurrViewSet)
+urlpatterns += router.urls
