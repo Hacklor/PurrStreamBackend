@@ -37,16 +37,18 @@ class ListPurrsApiTests(APITestCase):
         purr1 = Purr.objects.create(author='Author2', content='Content2')
         purr2 = Purr.objects.create(author='Author3', content='Content3')
 
+        self.assertEquals(purr0.created_at, purr1.created_at)
+
         response = self.client.get('/purrs/')
 
         self.assertEquals(purr0.id, response.data[0]['id'])
         self.assertEquals(purr0.author, response.data[0]['author'])
         self.assertEquals(purr0.content, response.data[0]['content'])
-        
+
         self.assertEquals(purr1.id, response.data[1]['id'])
         self.assertEquals(purr1.author, response.data[1]['author'])
         self.assertEquals(purr1.content, response.data[1]['content'])
-        
+
         self.assertEquals(purr2.id, response.data[2]['id'])
         self.assertEquals(purr2.author, response.data[2]['author'])
         self.assertEquals(purr2.content, response.data[2]['content'])

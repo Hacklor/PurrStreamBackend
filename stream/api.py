@@ -10,5 +10,5 @@ class PurrViewSet(mixins.ListModelMixin,
                     mixins.DestroyModelMixin,
                     viewsets.GenericViewSet):
 
-    queryset = Purr.objects.all()
+    queryset = Purr.objects.all().order_by('-created_at')
     serializer_class = PurrSerializer
