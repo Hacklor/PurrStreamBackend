@@ -172,3 +172,5 @@ db.sqlite3
 
 ### Vagrant ###
 .vagrant
+
+.vscode/

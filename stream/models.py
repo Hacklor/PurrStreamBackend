@@ -5,3 +5,4 @@ from django.utils import timezone
 class Purr(models.Model):
     author = models.CharField(max_length=32, default=None)
     content = models.CharField(max_length=141, default=None)
+    created_at = models.DateTimeField(auto_now_add=True)

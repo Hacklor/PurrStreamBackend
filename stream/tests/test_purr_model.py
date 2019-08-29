@@ -28,6 +28,7 @@ class PurrModelTests(TestCase):
         actual = Purr.objects.first()
         self.assertEquals(actual.author, 'Author')
         self.assertEquals(actual.content, 'Content')
+        self.assertIsNotNone(actual.created_at, timezone.now())
 
     def test_author_cannot_save_null(self):
         with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: stream_purr.author'):
