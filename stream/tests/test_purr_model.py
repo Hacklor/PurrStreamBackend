@@ -11,15 +11,12 @@ from stream.models import Purr
 class PurrModelTests(TestCase):
 
     def setUp(self):
-        self.mocked_now = datetime(2019, 1, 2)
+        self.mocked_now = timezone.now()
         timezone.now = Mock(return_value=self.mocked_now)
         self.purr = Purr(
             author='Author',
             content='Content',
         )
-
-    def test_mock_datetime_now(self):
-        self.assertEquals(timezone.now(), self.mocked_now)
 
     def test_purr_contains_all_attributes(self):
         self.purr.clean()
