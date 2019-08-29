@@ -64,6 +64,23 @@ class PurrModelTests(TestCase):
         actual = Purr.objects.first()
         self.assertEquals(actual.author, valid_author)
 
+    def test_author_can_contain_alphanumeric(self):
+        purr = Purr(
+            author='123abcxyzABCXYZ',
+            content='Content of a purr'
+        )
+        purr.full_clean()
+        purr.save()
+
+        actual = Purr.objects.first()
+        self.assertEquals(actual.author, '123abcxyzABCXYZ')
+
+    def test_author_cannot_contain_non_alphanumeric(self):
+        with self.assertRaises(ValidationError) as cm:
+            Purr(author='author!', content='Content').full_clean()
+
+        self.assertEqual(cm.exception.message_dict, {'author': ['Only alphanumeric characters are allowed.']})
+
     def test_content_cannot_save_null(self):
         with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: stream_purr.content'):
             self.purr.content = None
