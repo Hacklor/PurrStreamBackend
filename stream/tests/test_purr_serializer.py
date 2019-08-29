@@ -1,6 +1,9 @@
 from django.test import TestCase
 from rest_framework import serializers
 
+from django.utils import timezone
+from unittest.mock import Mock
+
 from stream.serializers import PurrSerializer
 from stream.models import Purr
 
@@ -15,6 +18,9 @@ class PurrSerializerTests(TestCase):
             author='Author',
             content='Content of a purr',
         )
+
+        self.mocked_now = timezone.now()
+        timezone.now = Mock(return_value=self.mocked_now)
 
     def test_validates_valid_purr(self):
         serializer = PurrSerializer(data=self.purr_attributes)
@@ -35,6 +41,7 @@ class PurrSerializerTests(TestCase):
         self.assertEquals(actual.id, 1)
         self.assertEquals(actual.author, self.purr_attributes['author'])
         self.assertEquals(actual.content, self.purr_attributes['content'])
+        self.assertEquals(actual.created_at, self.mocked_now)
 
     def test_serializes_valid_purr(self):
         self.purr.save()
