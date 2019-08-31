@@ -41,11 +41,18 @@ INSTALLED_APPS = [
 
     'corsheaders',
 
+    'rest_registration',
     'stream'
 ]
 
 REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+}
+
+REST_REGISTRATION = {
+    'REGISTER_VERIFICATION_ENABLED': False,
+    'REGISTER_EMAIL_VERIFICATION_ENABLED': False,
+    'RESET_PASSWORD_VERIFICATION_ENABLED': False,
 }
 
 MIDDLEWARE = [
@@ -123,6 +130,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+APPEND_SLASH=False
 
 
 # Static files (CSS, JavaScript, Images)
