@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 from django.utils import timezone
 from datetime import datetime
@@ -13,8 +14,16 @@ class PurrModelTests(TestCase):
     def setUp(self):
         self.mocked_now = timezone.now()
         timezone.now = Mock(return_value=self.mocked_now)
+
+        self.user = User.objects.create(
+            username='Test',
+            password='Pass',
+            email='user@example.com',
+            first_name='Test',
+            last_name='User'
+        )
         self.purr = Purr(
-            author='Author',
+            user=self.user,
             content='Content',
         )
 
@@ -23,63 +32,21 @@ class PurrModelTests(TestCase):
         self.purr.save()
 
         actual = Purr.objects.first()
-        self.assertEquals(actual.author, 'Author')
+        self.assertEquals(actual.user, self.user)
         self.assertEquals(actual.content, 'Content')
         self.assertIsNotNone(actual.created_at, timezone.now())
 
-    def test_author_cannot_save_null(self):
-        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: stream_purr.author'):
-            self.purr.author = None
+    def test_user_cannot_save_null(self):
+        with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: stream_purr.user'):
+            self.purr.user = None
             self.purr.save()
 
-    def test_author_null_is_invalid(self):
+    def test_user_null_is_invalid(self):
         with self.assertRaises(ValidationError) as cm:
-            self.purr.author = None
+            self.purr.user = None
             self.purr.full_clean()
 
-        self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be null.']})
-
-    def test_author_blank_is_invalid(self):
-        with self.assertRaises(ValidationError) as cm:
-            self.purr.author = ''
-            self.purr.full_clean()
-
-        self.assertEqual(cm.exception.message_dict, {'author': ['This field cannot be blank.']})
-
-    def test_author_cannot_be_longer_than_32_chars(self):
-        invalid_author = 33 * 'a'
-
-        with self.assertRaises(ValidationError) as cm:
-            self.purr.author = invalid_author
-            self.purr.full_clean()
-
-        self.assertEqual(cm.exception.message_dict, {'author': ['Ensure this value has at most 32 characters (it has 33).']})
-
-    def test_author_is_allowed_to_be_32_chars(self):
-        valid_author = 32 * 'a'
-        self.purr.author=valid_author
-        self.purr.full_clean()
-        self.purr.save()
-
-        actual = Purr.objects.first()
-        self.assertEquals(actual.author, valid_author)
-
-    def test_author_can_contain_alphanumeric(self):
-        purr = Purr(
-            author='123abcxyzABCXYZ',
-            content='Content of a purr'
-        )
-        purr.full_clean()
-        purr.save()
-
-        actual = Purr.objects.first()
-        self.assertEquals(actual.author, '123abcxyzABCXYZ')
-
-    def test_author_cannot_contain_non_alphanumeric(self):
-        with self.assertRaises(ValidationError) as cm:
-            Purr(author='author!', content='Content').full_clean()
-
-        self.assertEqual(cm.exception.message_dict, {'author': ['Only alphanumeric characters are allowed.']})
+        self.assertEqual(cm.exception.message_dict, {'user': ['This field cannot be null.']})
 
     def test_content_cannot_save_null(self):
         with self.assertRaisesMessage(IntegrityError, 'NOT NULL constraint failed: stream_purr.content'):
