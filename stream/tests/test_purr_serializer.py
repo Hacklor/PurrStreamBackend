@@ -56,6 +56,7 @@ class PurrSerializerTests(TestCase):
         serializer = PurrSerializer(instance=self.purr)
 
         self.assertEquals(serializer.data['id'], 1)
-        self.assertEquals(serializer.data['user_id'], self.user.id)
+        self.assertEquals(serializer.data['user']['id'], self.user.id)
+        self.assertEquals(serializer.data['user']['username'], self.user.username)
         self.assertEquals(serializer.data['content'], self.purr_attributes['content'])
         self.assertIsNotNone(serializer.data['created_at'])
